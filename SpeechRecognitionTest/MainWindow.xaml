@@ -36,6 +36,8 @@
                  Grid.Column="2"
                  Grid.RowSpan="2"
                  Grid.ColumnSpan="2"
+                 TextWrapping="Wrap"
+                 AcceptsReturn="True"
                  Text="Hello world!"></TextBox>
 
         <Button Name="SpeakButton"
