@@ -13,5 +13,16 @@ namespace SpeechRecognitionTest
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            DispatcherUnhandledException += (sender, args) =>
+            {
+                var exception = args.Exception;
+                MessageBox.Show($"{exception.Message}\n{exception.StackTrace}");
+
+                args.Handled = true;
+            };
+        }
     }
 }

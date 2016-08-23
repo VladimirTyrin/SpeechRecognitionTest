@@ -23,14 +23,21 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        
-        <TextBox Name="InputTextBox"
+
+        <TextBox Name="OutputTextBox"
                  Grid.Row="0"
                  Grid.Column="0"
                  Grid.RowSpan="2"
-                 Grid.ColumnSpan="4"
+                 Grid.ColumnSpan="2"
+                 Text=""></TextBox>
+
+        <TextBox Name="InputTextBox"
+                 Grid.Row="0"
+                 Grid.Column="2"
+                 Grid.RowSpan="2"
+                 Grid.ColumnSpan="2"
                  Text="Hello world!"></TextBox>
-        
+
         <Button Name="SpeakButton"
                 Grid.Row="2"
                 Grid.Column="3"

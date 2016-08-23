@@ -46,11 +46,24 @@ namespace SpeechRecognitionTest
             Volume = 100
         };
 
-        private static void Say(string text)
+        private static void DoSafe(Action action)
+        {
+            try
+            {
+                action.Invoke();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Oops: {ex.Message}");
+            }
+        }
+
+        private static void Say(string text) => DoSafe(() =>
         {
             var speachSynthesizer = BuildSpeachSynthesizer();
             speachSynthesizer.SpeakAsync(text);
-        }
+            
+        });
 
         private SpeechRecognizer BuildSpeachRecognizer()
         {
@@ -70,15 +83,25 @@ namespace SpeechRecognitionTest
             _recognitionEngine.LoadGrammar(new DictationGrammar());
             _recognitionEngine.SpeechRecognized += (o, args) =>
             {
-                MessageBox.Show(args.Result.Text);
-                _recognitionEngine.RecognizeAsync();
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    OutputTextBox.Text = args.Result.Text;
+                    Say(args.Result.Text);
+                    
+                });
+                
+            };
+            _recognitionEngine.RecognizeCompleted += (o, args) =>
+            {
+                if (_isRecognizing)
+                    _recognitionEngine.RecognizeAsync();
             };
         }
 
         private void ToggleRecognize()
         {
-            try
-            {
+            DoSafe(() =>
+            { 
                 if (_isRecognizing)
                 {
                     _recognitionEngine.RecognizeAsyncCancel();
@@ -91,11 +114,7 @@ namespace SpeechRecognitionTest
                 }
 
                 _isRecognizing = !_isRecognizing;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Oops: {ex.Message}");
-            }
+            });
             
         }
 
@@ -107,56 +126,34 @@ namespace SpeechRecognitionTest
 
         private void SaveSpeachToFileButton_OnClick(object sender, RoutedEventArgs e)
         {
-            try
+            DoSafe(() =>
             {
                 var textToSpeak = string.IsNullOrWhiteSpace(InputTextBox.Text) ? "Boooooring" : InputTextBox.Text;
                 var speachSynthesizer = BuildSpeachSynthesizer();
                 speachSynthesizer.SetOutputToWaveFile("speech.wav");
                 var prompt = speachSynthesizer.SpeakAsync(textToSpeak);
                 Say("Done");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Oops: {ex.Message}");
-            }
+            });
         }
 
         private void RecognizeFileButton_OnClick(object sender, RoutedEventArgs e)
         {
-            try
+            DoSafe(() =>
             {
                 var recognizer = BuildSpeachRecognizer();
                 recognizer.SpeechRecognized += (o, args) =>
                 {
                     var word = args.Result.Text;
-                    var answer = _answers.ContainsKey(word) ? _answers[word] : "Fuck you";
+                    var answer = _answers.ContainsKey(word) ? _answers[word] : "Wat";
                     Say(answer);
                 };
                 recognizer.SpeechRecognitionRejected += (o, args) =>
                 {
                     Say("Fuck you");
                 };
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Oops: {ex.Message}");
-            }
+            });
         }
 
-        private void RecognizeOtherWayFileButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ToggleRecognize();
-                
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Oops: {ex.Message}");
-            }
-
-        }
-
-        
+        private void RecognizeOtherWayFileButton_OnClick(object sender, RoutedEventArgs e) => DoSafe(ToggleRecognize);
     }
 }
