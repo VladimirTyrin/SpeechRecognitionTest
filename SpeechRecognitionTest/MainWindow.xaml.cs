@@ -43,7 +43,7 @@ namespace SpeechRecognitionTest
         private static SpeechSynthesizer BuildSpeachSynthesizer() => new SpeechSynthesizer
         {
             Rate = 0,
-            Volume = 100
+            Volume = 75
         };
 
         private static void DoSafe(Action action)
@@ -81,15 +81,15 @@ namespace SpeechRecognitionTest
             _recognitionEngine = new SpeechRecognitionEngine();
             _recognitionEngine.SetInputToDefaultAudioDevice();
             _recognitionEngine.LoadGrammar(new DictationGrammar());
+            _recognitionEngine.BabbleTimeout = new TimeSpan(0, 0, 15);
             _recognitionEngine.SpeechRecognized += (o, args) =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     OutputTextBox.Text = args.Result.Text;
                     Say(args.Result.Text);
-                    
+
                 });
-                
             };
             _recognitionEngine.RecognizeCompleted += (o, args) =>
             {
