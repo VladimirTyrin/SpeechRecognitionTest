@@ -26,6 +26,9 @@ namespace SpeechRecognitionTest
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool _isRecognizing;
+        private SpeechRecognitionEngine _recognitionEngine;
+
         private readonly Dictionary<string, string> _answers = new Dictionary<string, string>
         {
             {"Hello", "Hello" },
@@ -58,6 +61,42 @@ namespace SpeechRecognitionTest
             recognizer.LoadGrammar(new Grammar(grammarBuilder));
 
             return recognizer;
+        }
+
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            _recognitionEngine = new SpeechRecognitionEngine();
+            _recognitionEngine.SetInputToDefaultAudioDevice();
+            _recognitionEngine.LoadGrammar(new DictationGrammar());
+            _recognitionEngine.SpeechRecognized += (o, args) =>
+            {
+                MessageBox.Show(args.Result.Text);
+                _recognitionEngine.RecognizeAsync();
+            };
+        }
+
+        private void ToggleRecognize()
+        {
+            try
+            {
+                if (_isRecognizing)
+                {
+                    _recognitionEngine.RecognizeAsyncCancel();
+                    RecognizeOtherWayFileButton.Content = "Recognize";
+                }
+                else
+                {
+                    _recognitionEngine.RecognizeAsync();
+                    RecognizeOtherWayFileButton.Content = "Stop";
+                }
+
+                _isRecognizing = !_isRecognizing;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Oops: {ex.Message}");
+            }
+            
         }
 
         private void SpeakButton_OnClick(object sender, RoutedEventArgs e)
@@ -93,11 +132,31 @@ namespace SpeechRecognitionTest
                     var answer = _answers.ContainsKey(word) ? _answers[word] : "Fuck you";
                     Say(answer);
                 };
+                recognizer.SpeechRecognitionRejected += (o, args) =>
+                {
+                    Say("Fuck you");
+                };
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Oops: {ex.Message}");
             }
         }
+
+        private void RecognizeOtherWayFileButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ToggleRecognize();
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Oops: {ex.Message}");
+            }
+
+        }
+
+        
     }
 }

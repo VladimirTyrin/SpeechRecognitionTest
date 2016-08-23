@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="Speaker"
         Height="350"
-        Width="525">
+        Width="525"
+        Loaded="MainWindow_OnLoaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
@@ -45,7 +46,14 @@
         <Button Name="RecognizeFileButton"
                 Grid.Row="2"
                 Grid.Column="1"
-                Content="Load it!"
+                Content="Load!"
+                IsEnabled="False"
                 Click="RecognizeFileButton_OnClick"></Button>
+
+        <Button Name="RecognizeOtherWayFileButton"
+                Grid.Row="2"
+                Grid.Column="0"
+                Content="Start recognizing!"
+                Click="RecognizeOtherWayFileButton_OnClick"></Button>
     </Grid>
 </Window>
