@@ -4,6 +4,18 @@
              xmlns:local="clr-namespace:SpeechRecognitionTest"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+         <Style TargetType="Control">
+             <Style.Setters>
+                 <Setter Property="Margin" Value="10"></Setter>
+             </Style.Setters>
+         </Style>
+        
+        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type Control}}">
+            
+        </Style>
+
+        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Control}}">
+
+        </Style>
     </Application.Resources>
 </Application>

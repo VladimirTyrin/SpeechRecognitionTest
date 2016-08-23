@@ -5,8 +5,47 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SpeechRecognitionTest"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Speaker"
+        Height="350"
+        Width="525">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
         
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <TextBox Name="InputTextBox"
+                 Grid.Row="0"
+                 Grid.Column="0"
+                 Grid.RowSpan="2"
+                 Grid.ColumnSpan="4"
+                 Text="Hello world!"></TextBox>
+        
+        <Button Name="SpeakButton"
+                Grid.Row="2"
+                Grid.Column="3"
+                Content="Say it!"
+                Click="SpeakButton_OnClick"></Button>
+
+        <Button Name="SaveSpeachToFileButton"
+                Grid.Row="2"
+                Grid.Column="2"
+                Content="Save it!"
+                Click="SaveSpeachToFileButton_OnClick"></Button>
+
+        <Button Name="RecognizeFileButton"
+                Grid.Row="2"
+                Grid.Column="1"
+                Content="Load it!"
+                Click="RecognizeFileButton_OnClick"></Button>
     </Grid>
 </Window>

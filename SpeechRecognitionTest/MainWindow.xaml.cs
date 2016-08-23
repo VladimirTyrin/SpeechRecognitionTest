@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +14,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Speech;
+using System.Speech.AudioFormat;
+using System.Speech.Recognition;
+using System.Speech.Synthesis;
 
 namespace SpeechRecognitionTest
 {
@@ -20,9 +26,78 @@ namespace SpeechRecognitionTest
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly Dictionary<string, string> _answers = new Dictionary<string, string>
+        {
+            {"Hello", "Hello" },
+            {"Yes", "No" }
+        };
+
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private static SpeechSynthesizer BuildSpeachSynthesizer() => new SpeechSynthesizer
+        {
+            Rate = 0,
+            Volume = 100
+        };
+
+        private static void Say(string text)
+        {
+            var speachSynthesizer = BuildSpeachSynthesizer();
+            speachSynthesizer.SpeakAsync(text);
+        }
+
+        private SpeechRecognizer BuildSpeachRecognizer()
+        {
+            var recognizer = new SpeechRecognizer();
+
+            var choices = new Choices(_answers.Keys.ToArray());
+            var grammarBuilder = new GrammarBuilder(choices);
+            recognizer.LoadGrammar(new Grammar(grammarBuilder));
+
+            return recognizer;
+        }
+
+        private void SpeakButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var textToSpeak = string.IsNullOrWhiteSpace(InputTextBox.Text) ? "Boooooring" : InputTextBox.Text;
+            Say(textToSpeak);
+        }
+
+        private void SaveSpeachToFileButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var textToSpeak = string.IsNullOrWhiteSpace(InputTextBox.Text) ? "Boooooring" : InputTextBox.Text;
+                var speachSynthesizer = BuildSpeachSynthesizer();
+                speachSynthesizer.SetOutputToWaveFile("speech.wav");
+                var prompt = speachSynthesizer.SpeakAsync(textToSpeak);
+                Say("Done");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Oops: {ex.Message}");
+            }
+        }
+
+        private void RecognizeFileButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var recognizer = BuildSpeachRecognizer();
+                recognizer.SpeechRecognized += (o, args) =>
+                {
+                    var word = args.Result.Text;
+                    var answer = _answers.ContainsKey(word) ? _answers[word] : "Fuck you";
+                    Say(answer);
+                };
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Oops: {ex.Message}");
+            }
         }
     }
 }
